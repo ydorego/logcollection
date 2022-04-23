@@ -1,2 +1,2 @@
 # logcollection
-Log Collection Take Home Project fro Cribl
+Log Collection Take Home Project for Cribl
