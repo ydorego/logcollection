@@ -61,7 +61,7 @@ public class LogCollectorControllerTest {
     }    
 
     @Test
-    public void whenFilterIsProvidedAreVaid_thenReturnsStatus202() throws Exception {
+    public void whenFilterIsProvidedAreValid_thenReturnsStatus202() throws Exception {
 
         String responseJsonString = mvc
                 .perform(get("/logCollector/get-events?fileName=testFile.txt&numberOfEvents=200&matchingFilter=test"))

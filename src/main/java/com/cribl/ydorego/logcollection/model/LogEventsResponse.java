@@ -3,6 +3,10 @@ package com.cribl.ydorego.logcollection.model;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * LogEventsResponse list of evetns retruns as part of a request to get events from a file.
+ * 
+ */
 public class LogEventsResponse {
 
     private final String fileName;
