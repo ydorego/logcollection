@@ -3,6 +3,7 @@ package com.cribl.ydorego.logcollection.controller;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
+import com.cribl.ydorego.logcollection.exceptions.LogCollectorDefaultException;
 import com.cribl.ydorego.logcollection.validation.ValidationErrorResponse;
 import com.cribl.ydorego.logcollection.validation.Violation;
 
@@ -58,4 +59,14 @@ class ErrorHandlingControllerAdvice {
     return error;
   }
 
+  @ExceptionHandler(LogCollectorDefaultException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ResponseBody
+  public ValidationErrorResponse onLogCollectorDefaultException(LogCollectorDefaultException e) {
+    ValidationErrorResponse error = new ValidationErrorResponse();
+    error.getViolations().add(new Violation(e.getFieldName(), e.getMessage()));
+    return error;
+  }
+
+  
 }

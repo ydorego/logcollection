@@ -3,7 +3,7 @@ package com.cribl.ydorego.logcollection.model;
 import java.util.Date;
 
 /**
- * Encapsulate customer log request information.
+ * Encapsulate customer log request fields.
  * 
  */
 public class LogCollectionRequest {
