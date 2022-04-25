@@ -35,9 +35,11 @@ public class LogCollectorController {
 
    Logger log = LoggerFactory.getLogger(LogCollectorController.class);
 
-   @Autowired
    private ILogCollectorService logCollectorService;
 
+   public LogCollectorController(@Autowired ILogCollectorService logCollectorService) {
+      this.logCollectorService = logCollectorService;
+   }
 
    @GetMapping(path = "/get-files", produces = MediaType.APPLICATION_JSON_VALUE)
    public ResponseEntity<LogFilesResponse> getFiles(
@@ -50,7 +52,7 @@ public class LogCollectorController {
    public ResponseEntity<LogEventsResponse> getEvents(
          @NotNull @RequestParam(required = true) String fileName,
          @NotNull @Min(1) @Max(250) @RequestParam(required = true) Integer numberOfEvents,
-         @RequestParam(required = false) String matchingFilter) {
+         @RequestParam(required = false) String matchingFilter) throws LogCollectorDefaultException {
 
       List<String> events = new ArrayList<>();
 
@@ -64,14 +66,7 @@ public class LogCollectorController {
       //
       // TBD: Log Collection Service will perform actual log processing
       //
-
-      LogEventsResponse response = new LogEventsResponse(logCollectionRequest.getFileName(),
-            logCollectionRequest.getNumberOfEvents(),
-            logCollectionRequest.getMatchingFilter(),
-            logCollectionRequest.getTimeRequested(),
-            new Date(), events);
-
-      return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+      return new ResponseEntity<>(logCollectorService.getEventsFromFile(logCollectionRequest), HttpStatus.ACCEPTED);
 
    }
 

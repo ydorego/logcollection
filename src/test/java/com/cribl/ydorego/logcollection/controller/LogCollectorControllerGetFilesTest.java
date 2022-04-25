@@ -22,12 +22,6 @@ public class LogCollectorControllerGetFilesTest {
     @Autowired
     private MockMvc mvc;
 
-    @MockBean
-    private ILogCollectorService logCollectorService;
- 
-    @MockBean
-    private LogFilesResponse filesResponse;
-
     @Test
     public void whenPathVariableIsMissingAllParamsInvalid_thenReturnsStatus400() throws Exception {
 

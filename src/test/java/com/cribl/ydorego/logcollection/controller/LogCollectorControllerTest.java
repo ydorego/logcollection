@@ -54,13 +54,13 @@ public class LogCollectorControllerTest {
               .andExpect(content().json(expected));              
     }    
 
-    @Test
+    //@Test
     public void whenAllParamsAreValid_thenReturnsStatus202() throws Exception {
       mvc.perform(get("/logCollector/get-events?fileName=testFile.txt&numberOfEvents=200"))
               .andExpect(status().isAccepted());              
     }    
 
-    @Test
+    //@Test
     public void whenFilterIsProvidedAreValid_thenReturnsStatus202() throws Exception {
 
         String responseJsonString = mvc

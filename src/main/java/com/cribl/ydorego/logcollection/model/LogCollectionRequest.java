@@ -2,6 +2,10 @@ package com.cribl.ydorego.logcollection.model;
 
 import java.util.Date;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 /**
  * Encapsulate customer log request fields.
  * 
@@ -11,11 +15,15 @@ public class LogCollectionRequest {
     /**
      * Filename include extension.
      */
+    @NotNull
     private final String fileName;
 
     /**
      * Number of events to return
      */
+    @NotNull
+    @Min(1)
+    @Max(500)
     private final Integer numberOfEvents;
 
     /**
@@ -44,14 +52,15 @@ public class LogCollectionRequest {
         return numberOfEvents;
     }
 
+    public String getMatchingFilter() {
+        return matchingFilter;
+    }
+ 
     public void setTimeRequested(Date timeRequested) {
         this.timeRequested = timeRequested;
     }
 
-    public String getMatchingFilter() {
-        return matchingFilter;
-    }
-    
+   
     public Date getTimeRequested() {
         return timeRequested;
     }
