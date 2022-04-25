@@ -29,7 +29,7 @@ public class LogCollectionRequest {
     /**
      * Line filter to match
      */
-    private final String matchingFilter;
+    private final String filter;
 
     /**
      * Time when the request was received
@@ -41,18 +41,18 @@ public class LogCollectionRequest {
      */
     private final String serverList;
 
-    public LogCollectionRequest(String fileName, Integer numberOfEvents, String matchingFilter) {
+    public LogCollectionRequest(String fileName, Integer numberOfEvents, String filter) {
         this.fileName = fileName;
         this.numberOfEvents = numberOfEvents;
-        this.matchingFilter = matchingFilter;
+        this.filter = filter;
         this.timeRequested = new Date();
         this.serverList = null;
     }
 
-    public LogCollectionRequest(String fileName, Integer numberOfEvents, String matchingFilter, String serverList) {
+    public LogCollectionRequest(String fileName, Integer numberOfEvents, String filter, String serverList) {
         this.fileName = fileName;
         this.numberOfEvents = numberOfEvents;
-        this.matchingFilter = matchingFilter;
+        this.filter = filter;
         this.timeRequested = new Date();
         this.serverList = serverList;
     }
@@ -66,8 +66,8 @@ public class LogCollectionRequest {
         return numberOfEvents;
     }
 
-    public String getMatchingFilter() {
-        return matchingFilter;
+    public String getFilter() {
+        return filter;
     }
  
     public void setTimeRequested(Date timeRequested) {
@@ -87,10 +87,10 @@ public class LogCollectionRequest {
     @Override
     public String toString() {
         if (serverList != null) {
-            return "LogCollectionRequest [fileName=" + fileName + ", matchingFilter=" + matchingFilter + ", numberOfEvents="
+            return "LogCollectionRequest [fileName=" + fileName + ", filter=" + filter + ", numberOfEvents="
                 + numberOfEvents + ", serverList=" + serverList + ", timeRequested=" + timeRequested + "]";
         } else {
-            return "LogCollectionRequest [fileName=" + fileName + ", matchingFilter=" + matchingFilter + ", numberOfEvents="
+            return "LogCollectionRequest [fileName=" + fileName + ", filter=" + filter + ", numberOfEvents="
             + numberOfEvents + ", timeRequested=" + timeRequested + "]";
 
         }

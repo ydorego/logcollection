@@ -109,7 +109,7 @@ curl http://localhost:8090/logCollector/get-files?directoryPath=/var/log&matchin
 You can get x number of evetns from a specified log file. As per the requirement the evetns are listed in a reverse time order.
 
 ```
-GET http://<target-server>:8090/logCollector/get-events?fileName=/var/log/dpkg.log&numberOfEvents=20&matchingFilter=test
+GET http://<target-server>:8090/logCollector/get-events?fileName=/var/log/dpkg.log&numberOfEvents=20&filter=contains-all:test
 ```
 
 List of supported request parameters:
@@ -117,13 +117,13 @@ List of supported request parameters:
 - `target-server` = localhost
 - `fileName` = Full path name of the log file to process
 - `numberOfEvents` = Maximum number of events to return.
-- `matchingFilter` = Optional Matching filter, only accept lines that contains at least one of the provided tokens.
+- `filter` = Optional filter.
 
 
 </br>
 
 ```
-curl http://localhost:8090/logCollector/get-events?fileName=/var/log/dpkg.log&numberOfEvents=20&matchingFilter=test
+curl http://localhost:8090/logCollector/get-events?fileName=/var/log/dpkg.log&numberOfEvents=20&filter=contains-all:test
 ```
 
 **Returned Payload:**
@@ -132,7 +132,7 @@ curl http://localhost:8090/logCollector/get-events?fileName=/var/log/dpkg.log&nu
 {
     "fileName": "/var/log/dpkg.log",
     "numberOfEvents": 20,
-    "matchingFilter": "test",
+    "filter": "contains-all:test",
     "timeRequested": "2022-04-25T02:19:56.093+00:00",
     "timeCompleted": "2022-04-25T02:19:56.251+00:00",
     "events": [
@@ -165,10 +165,10 @@ curl http://localhost:8090/logCollector/get-events?fileName=/var/log/dpkg.log&nu
 
 ### Get the list of events from a server delegating to workers
 
-You can get x number of evetns from a specified log file. As per the requirement the evetns are listed in a reverse time order.
+You can get x number of events from a specified log file. As per the requirement the evetns are listed in a reverse time order.
 
 ```
-GET http://localhost:8090/logCollector/get-events-from-servers?fileName=/var/log/dpkg.log&numberOfEvents=20&matchingFilter=test&serverList=log-collector-worker1,log-collector-worker2
+GET http://localhost:8090/logCollector/get-events-from-servers?fileName=/var/log/dpkg.log&numberOfEvents=20&filter=contains-all:test&serverList=log-collector-worker1,log-collector-worker2
 ```
 
 List of supported request parameters:
@@ -177,12 +177,12 @@ List of supported request parameters:
 - `fileName` = Full path name of the log file to process
 - `numberOfEvents` = Maximum number of events to return.
 - `serverList` = List of servers to retrieve events. In the above example log-collector-worker1 and log-collector-worker2
-- `matchingFilter` = Optional Matching filter, only accept lines that contains at least one of the provided tokens.
+- `filter` = Optional filter.
 
 </br>
 
 ```
-curl http://localhost:8090/logCollector/get-events-from-servers?fileName=/var/log/dpkg.log&numberOfEvents=20&matchingFilter=test&serverList=log-collector-worker1,log-collector-worker2
+curl http://localhost:8090/logCollector/get-events-from-servers?fileName=/var/log/dpkg.log&numberOfEvents=20&filter=contains-all:test&serverList=log-collector-worker1,log-collector-worker2
 ```
 
 **Returned Payload:**
@@ -194,7 +194,7 @@ curl http://localhost:8090/logCollector/get-events-from-servers?fileName=/var/lo
         "logEventsResponse": {
             "fileName": "/var/log/dpkg.log",
             "numberOfEvents": 20,
-            "matchingFilter": "test",
+            "filter": "contains-all:test",
             "timeRequested": "2022-04-25T04:26:52.774+00:00",
             "timeCompleted": "2022-04-25T04:26:52.938+00:00",
             "events": [
@@ -226,7 +226,7 @@ curl http://localhost:8090/logCollector/get-events-from-servers?fileName=/var/lo
         "logEventsResponse": {
             "fileName": "/var/log/dpkg.log",
             "numberOfEvents": 20,
-            "matchingFilter": "test",
+            "filter": "contains-all:test",
             "timeRequested": "2022-04-25T04:26:55.541+00:00",
             "timeCompleted": "2022-04-25T04:26:55.727+00:00",
             "events": [

@@ -53,9 +53,9 @@ public class LogCollectorController {
    public ResponseEntity<LogEventsResponse> getEvents(
          @NotNull @RequestParam(required = true) String fileName,
          @NotNull @Min(1) @Max(250) @RequestParam(required = true) Integer numberOfEvents,
-         @RequestParam(required = false) String matchingFilter) throws LogCollectorDefaultException {
+         @RequestParam(required = false) String filter) throws LogCollectorDefaultException {
 
-      LogCollectionRequest logCollectionRequest = new LogCollectionRequest(fileName, numberOfEvents, matchingFilter);
+      LogCollectionRequest logCollectionRequest = new LogCollectionRequest(fileName, numberOfEvents, filter);
 
       log.info("Received log collection request: {} and about to delegate to log collector worker", logCollectionRequest);
       
@@ -68,11 +68,11 @@ public class LogCollectorController {
          @NotNull @RequestParam(required = true) String fileName,
          @NotNull @Min(1) @Max(250) @RequestParam(required = true) Integer numberOfEvents,
          @RequestParam(required = true) String serverList,
-         @RequestParam(required = false) String matchingFilter) throws LogCollectorDefaultException {
+         @RequestParam(required = false) String filter) throws LogCollectorDefaultException {
 
-      LogCollectionRequest logCollectionRequest = new LogCollectionRequest(fileName, numberOfEvents, matchingFilter, serverList);
+      LogCollectionRequest logCollectionRequest = new LogCollectionRequest(fileName, numberOfEvents, filter, serverList);
 
-      log.info("Received log collection request: {} and about to delegate to log collector worker", logCollectionRequest);
+      log.info("Received log collection request: {} and about to delegate to log collector workers", logCollectionRequest);
       
       return new ResponseEntity<>(logCollectorService.getEventsFromFileFromServers(logCollectionRequest), HttpStatus.ACCEPTED);
 
