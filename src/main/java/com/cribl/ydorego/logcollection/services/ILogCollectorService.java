@@ -1,8 +1,11 @@
 package com.cribl.ydorego.logcollection.services;
 
+import java.util.List;
+
 import com.cribl.ydorego.logcollection.exceptions.LogCollectorDefaultException;
 import com.cribl.ydorego.logcollection.model.LogCollectionRequest;
 import com.cribl.ydorego.logcollection.model.LogEventsResponse;
+import com.cribl.ydorego.logcollection.model.LogEventsServerResponse;
 import com.cribl.ydorego.logcollection.model.LogFilesResponse;
 
 /**
@@ -34,4 +37,16 @@ public interface ILogCollectorService {
      */
     LogEventsResponse getEventsFromFile(LogCollectionRequest logCollectionRequest) throws LogCollectorDefaultException;
 
+    /**
+     * Returns a list of Events retrieved from the specified file from several servers
+     * 
+     * @param LogCollectionRequest An object encapsulating the client request, it contains the full path of the file to read,
+     * the number of events to returns and a matchingFilter and the list of servers.
+     * 
+     * @return LogEventsResponse contains the list of events in reverse time order
+     * @throws LogCollectorDefaultException in case of error during processing. File not found, etc...
+     * 
+     */
+    List<LogEventsServerResponse> getEventsFromFileFromServers(LogCollectionRequest logCollectionRequest) throws LogCollectorDefaultException;
+    
 }

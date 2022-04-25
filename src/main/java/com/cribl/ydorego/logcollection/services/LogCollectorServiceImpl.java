@@ -16,11 +16,16 @@ import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.cribl.ydorego.logcollection.exceptions.LogCollectorDefaultException;
 import com.cribl.ydorego.logcollection.model.LogCollectionRequest;
 import com.cribl.ydorego.logcollection.model.LogEventsResponse;
+import com.cribl.ydorego.logcollection.model.LogEventsServerResponse;
 import com.cribl.ydorego.logcollection.model.LogFileDescriptor;
 import com.cribl.ydorego.logcollection.model.LogFilesResponse;
 
@@ -29,6 +34,13 @@ public class LogCollectorServiceImpl implements ILogCollectorService {
 
     Logger log = LoggerFactory.getLogger(LogCollectorServiceImpl.class);
 
+    @Autowired
+    private RestTemplate restTemplate;
+
+    // public LogCollectorServiceImpl(@Autowired RestTemplateBuilder builder) {
+    //    this.restTemplate = builder.build();
+    // }
+ 
     @Override
     public LogFilesResponse getFilesFromDirectory(String directoryPath, String matchingExtensions) throws LogCollectorDefaultException {
 
@@ -170,4 +182,33 @@ public class LogCollectorServiceImpl implements ILogCollectorService {
         }               
     }
 
+    /**
+     * Reuse of getEventsFromFile to retrieve fro remote servers. The current implementation is not optimal since we are
+     * processing sequentially. 
+     * 
+     * It could be improved with a thread pool forking the request in parallel and collecting results asynchronously.
+     * 
+     * TODO: Error Handling.
+     * 
+     */
+    @Override
+    public List<LogEventsServerResponse> getEventsFromFileFromServers(LogCollectionRequest logCollectionRequest) throws LogCollectorDefaultException {
+ 
+        String[] serverList = logCollectionRequest.getServerList().split(",");
+
+        StringBuilder query = new StringBuilder(":8090/logCollector/get-events?");
+        query.append("fileName=" + logCollectionRequest.getFileName());
+        query.append("&numberOfEvents=" + logCollectionRequest.getNumberOfEvents());
+        if (logCollectionRequest.getMatchingFilter() != null) {
+            query.append("&matchingFilter=" + logCollectionRequest.getMatchingFilter());
+        }
+      
+        List<LogEventsServerResponse> serversResponses = new ArrayList<>();
+        Arrays.asList(serverList).stream().forEach(server -> {
+            LogEventsResponse responseFromServer = restTemplate.getForObject("http://" + server + query, LogEventsResponse.class);
+            serversResponses.add(new LogEventsServerResponse(server, responseFromServer));
+        });
+
+        return serversResponses;
+    }
 }

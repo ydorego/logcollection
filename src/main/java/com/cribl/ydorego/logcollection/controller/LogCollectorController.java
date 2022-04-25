@@ -11,6 +11,7 @@ import javax.validation.constraints.NotNull;
 import com.cribl.ydorego.logcollection.exceptions.LogCollectorDefaultException;
 import com.cribl.ydorego.logcollection.model.LogCollectionRequest;
 import com.cribl.ydorego.logcollection.model.LogEventsResponse;
+import com.cribl.ydorego.logcollection.model.LogEventsServerResponse;
 import com.cribl.ydorego.logcollection.model.LogFilesResponse;
 import com.cribl.ydorego.logcollection.services.ILogCollectorService;
 
@@ -54,19 +55,26 @@ public class LogCollectorController {
          @NotNull @Min(1) @Max(250) @RequestParam(required = true) Integer numberOfEvents,
          @RequestParam(required = false) String matchingFilter) throws LogCollectorDefaultException {
 
-      List<String> events = new ArrayList<>();
-
-      events.add("Fake Events 1");
-      events.add("Fake Events 2");
-
       LogCollectionRequest logCollectionRequest = new LogCollectionRequest(fileName, numberOfEvents, matchingFilter);
 
-      log.info("Received log collection request: {} and about to delegate to log collector worker",
-            logCollectionRequest);
-      //
-      // TBD: Log Collection Service will perform actual log processing
-      //
+      log.info("Received log collection request: {} and about to delegate to log collector worker", logCollectionRequest);
+      
       return new ResponseEntity<>(logCollectorService.getEventsFromFile(logCollectionRequest), HttpStatus.ACCEPTED);
+
+   }
+
+   @GetMapping(path = "/get-events-from-servers", produces = MediaType.APPLICATION_JSON_VALUE)
+   public ResponseEntity<List<LogEventsServerResponse>> getEventsFromServers(
+         @NotNull @RequestParam(required = true) String fileName,
+         @NotNull @Min(1) @Max(250) @RequestParam(required = true) Integer numberOfEvents,
+         @RequestParam(required = true) String serverList,
+         @RequestParam(required = false) String matchingFilter) throws LogCollectorDefaultException {
+
+      LogCollectionRequest logCollectionRequest = new LogCollectionRequest(fileName, numberOfEvents, matchingFilter, serverList);
+
+      log.info("Received log collection request: {} and about to delegate to log collector worker", logCollectionRequest);
+      
+      return new ResponseEntity<>(logCollectorService.getEventsFromFileFromServers(logCollectionRequest), HttpStatus.ACCEPTED);
 
    }
 

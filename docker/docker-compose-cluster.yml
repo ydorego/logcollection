@@ -1,0 +1,27 @@
+version: '3.3'
+services:
+    log-collection-server:
+        container_name: log-collector-server
+        image: log-collector-server:latest
+        ports:
+            - 8090:8090
+        networks:
+            - log-collector-network
+    log-collection-worker1:
+        container_name: log-collector-worker1
+        image: log-collector-server:latest
+        ports:
+            - 8091:8090
+        networks:
+            - log-collector-network
+    log-collection-worker2:
+        container_name: log-collector-worker2
+        image: log-collector-server:latest
+        ports:
+            - 8092:8090
+        networks:
+            - log-collector-network
+
+networks:
+    log-collector-network:
+        driver: bridge

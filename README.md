@@ -161,6 +161,100 @@ curl http://localhost:8090/logCollector/get-events?fileName=/var/log/dpkg.log&nu
 ```
 
 
+## Bonus Requirement
+
+### Get the list of events from a server delegating to workers
+
+You can get x number of evetns from a specified log file. As per the requirement the evetns are listed in a reverse time order.
+
+```
+GET http://localhost:8090/logCollector/get-events-from-servers?fileName=/var/log/dpkg.log&numberOfEvents=20&matchingFilter=test&serverList=log-collector-worker1,log-collector-worker2
+```
+
+List of supported request parameters:
+
+- `target-server` = localhost
+- `fileName` = Full path name of the log file to process
+- `numberOfEvents` = Maximum number of events to return.
+- `serverList` = List of servers to retrieve events. In the above example log-collector-worker1 and log-collector-worker2
+- `matchingFilter` = Optional Matching filter, only accept lines that contains at least one of the provided tokens.
+
+</br>
+
+```
+curl http://localhost:8090/logCollector/get-events-from-servers?fileName=/var/log/dpkg.log&numberOfEvents=20&matchingFilter=test&serverList=log-collector-worker1,log-collector-worker2
+```
+
+**Returned Payload:**
+
+```
+[
+    {
+        "serverName": "log-collector-worker1",
+        "logEventsResponse": {
+            "fileName": "/var/log/dpkg.log",
+            "numberOfEvents": 20,
+            "matchingFilter": "test",
+            "timeRequested": "2022-04-25T04:26:52.774+00:00",
+            "timeCompleted": "2022-04-25T04:26:52.938+00:00",
+            "events": [
+                "",
+                "2022-04-20 10:54:19 startup packages configure",
+                "2022-04-20 10:54:19 status not-installed readline-common:all <none>",
+                "2022-04-20 10:54:19 status config-files readline-common:all 8.1-1",
+                "2022-04-20 10:54:19 purge readline-common:all 8.1-1 <none>",
+                "2022-04-20 10:54:19 status not-installed dirmngr:amd64 <none>",
+                "2022-04-20 10:54:19 status config-files dirmngr:amd64 2.2.27-2+deb11u1",
+                "2022-04-20 10:54:19 purge dirmngr:amd64 2.2.27-2+deb11u1 <none>",
+                "2022-04-20 10:54:19 status not-installed wget:amd64 <none>",
+                "2022-04-20 10:54:19 status config-files wget:amd64 1.21-1+deb11u1",
+                "2022-04-20 10:54:19 purge wget:amd64 1.21-1+deb11u1 <none>",
+                "2022-04-20 10:54:19 status not-installed gpg-agent:amd64 <none>",
+                "2022-04-20 10:54:19 status config-files gpg-agent:amd64 2.2.27-2+deb11u1",
+                "2022-04-20 10:54:19 purge gpg-agent:amd64 2.2.27-2+deb11u1 <none>",
+                "2022-04-20 10:54:19 startup packages purge",
+                "2022-04-20 10:54:19 status installed libc-bin:amd64 2.31-13+deb11u3",
+                "2022-04-20 10:54:19 status half-configured libc-bin:amd64 2.31-13+deb11u3",
+                "2022-04-20 10:54:19 trigproc libc-bin:amd64 2.31-13+deb11u3 <none>",
+                "2022-04-20 10:54:19 startup packages configure",
+                "2022-04-20 10:54:19 status config-files readline-common:all 8.1-1"
+            ]
+        }
+    },
+    {
+        "serverName": "log-collector-worker2",
+        "logEventsResponse": {
+            "fileName": "/var/log/dpkg.log",
+            "numberOfEvents": 20,
+            "matchingFilter": "test",
+            "timeRequested": "2022-04-25T04:26:55.541+00:00",
+            "timeCompleted": "2022-04-25T04:26:55.727+00:00",
+            "events": [
+                "",
+                "2022-04-20 10:54:19 startup packages configure",
+                "2022-04-20 10:54:19 status not-installed readline-common:all <none>",
+                "2022-04-20 10:54:19 status config-files readline-common:all 8.1-1",
+                "2022-04-20 10:54:19 purge readline-common:all 8.1-1 <none>",
+                "2022-04-20 10:54:19 status not-installed dirmngr:amd64 <none>",
+                "2022-04-20 10:54:19 status config-files dirmngr:amd64 2.2.27-2+deb11u1",
+                "2022-04-20 10:54:19 purge dirmngr:amd64 2.2.27-2+deb11u1 <none>",
+                "2022-04-20 10:54:19 status not-installed wget:amd64 <none>",
+                "2022-04-20 10:54:19 status config-files wget:amd64 1.21-1+deb11u1",
+                "2022-04-20 10:54:19 purge wget:amd64 1.21-1+deb11u1 <none>",
+                "2022-04-20 10:54:19 status not-installed gpg-agent:amd64 <none>",
+                "2022-04-20 10:54:19 status config-files gpg-agent:amd64 2.2.27-2+deb11u1",
+                "2022-04-20 10:54:19 purge gpg-agent:amd64 2.2.27-2+deb11u1 <none>",
+                "2022-04-20 10:54:19 startup packages purge",
+                "2022-04-20 10:54:19 status installed libc-bin:amd64 2.31-13+deb11u3",
+                "2022-04-20 10:54:19 status half-configured libc-bin:amd64 2.31-13+deb11u3",
+                "2022-04-20 10:54:19 trigproc libc-bin:amd64 2.31-13+deb11u3 <none>",
+                "2022-04-20 10:54:19 startup packages configure",
+                "2022-04-20 10:54:19 status config-files readline-common:all 8.1-1"
+            ]
+        }
+    }
+] 
+```
 
 
 
