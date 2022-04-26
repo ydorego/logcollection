@@ -7,7 +7,6 @@ import com.cribl.ydorego.logcollection.services.filter.IEventFilter;
 import com.cribl.ydorego.logcollection.services.filter.RegexFilter;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
