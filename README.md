@@ -1,6 +1,6 @@
-# logcollection
+# Log Collection
 
-Log Collection Take Home Project for Yves do Régo Cribl interviews
+Log Collection Take Home Project
 
 
 ## Software Required on your system...
@@ -161,7 +161,15 @@ curl http://localhost:8090/logCollector/get-events?fileName=/var/log/dpkg.log&nu
 ```
 
 
-## Bonus Requirement
+## Bonus Requirement Cluster master-workers
+
+</br>
+
+### Docker compose command  for the 3 nodes cluster.
+
+```
+docker-compose -f docker/docker-compose-cluster.yml up
+```
 
 ### Get the list of events from a server delegating to workers
 
