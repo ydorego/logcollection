@@ -1,10 +1,7 @@
 package com.cribl.ydorego.logcollection.services.filter;
 
 /**
- * Given a list of comma separated tokens, this filter will evaluate that
- * the event contains at least one of them.
- * 
- * contains://token1,token2,token3
+ * Default abstract filter implementation to keep the passed scheme
  */
 public abstract class DefaultFilterImpl implements IEventFilter {
 

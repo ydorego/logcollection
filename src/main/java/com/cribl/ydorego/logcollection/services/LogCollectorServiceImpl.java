@@ -17,7 +17,10 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.cribl.ydorego.logcollection.exceptions.LogCollectorDefaultException;
@@ -36,6 +39,9 @@ public class LogCollectorServiceImpl implements ILogCollectorService {
 
     Logger log = LoggerFactory.getLogger(LogCollectorServiceImpl.class);
 
+    @Value("${server.port}")
+    private String serverPort;
+    
     @Autowired
     private RestTemplate restTemplate;
  
@@ -204,7 +210,7 @@ public class LogCollectorServiceImpl implements ILogCollectorService {
  
         String[] serverList = logCollectionRequest.getServerList().split(",");
 
-        StringBuilder query = new StringBuilder(":8090/logCollector/get-events?");
+        StringBuilder query = new StringBuilder(":" + serverPort + "/logCollector/get-events?");
         query.append("fileName=" + logCollectionRequest.getFileName());
         query.append("&numberOfEvents=" + logCollectionRequest.getNumberOfEvents());
         if (logCollectionRequest.getFilter() != null) {
@@ -213,21 +219,28 @@ public class LogCollectorServiceImpl implements ILogCollectorService {
       
         List<LogEventsServerResponse> serversResponses = new ArrayList<>();
         Arrays.asList(serverList).stream().forEach(server -> {
-            LogEventsResponse responseFromServer = restTemplate.getForObject("http://" + server + query, LogEventsResponse.class);
-            serversResponses.add(new LogEventsServerResponse(server, responseFromServer));
+            try {
+                ResponseEntity<LogEventsResponse> responseFromServer = restTemplate.getForEntity("http://" + server + query, LogEventsResponse.class);
+                serversResponses.add(new LogEventsServerResponse(server, responseFromServer.getBody(), responseFromServer.getStatusCodeValue(), ""));
+            } catch (RestClientException restException) {
+                serversResponses.add(new LogEventsServerResponse(server, null, 400, restException.getMessage()));
+            }
         });
 
         return serversResponses;
     }
 
     /**
+     * 
+     * Could have use fancy SpringBoot injection, but went with plain switch statement.
+     * 
+     * @return Filter corresponding to the user selected scheme.
+     * 
      * @throws LogCollectorDefaultException
      * 
      */
     private IEventFilter getEventFilter(String filter) throws LogCollectorDefaultException {
 
-        // Validate the supported scheme.
-        //
         try {
             String scheme = filter.substring(0, filter.indexOf(":"));
 

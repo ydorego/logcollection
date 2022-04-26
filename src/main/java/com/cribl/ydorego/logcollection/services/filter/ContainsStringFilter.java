@@ -3,7 +3,7 @@ package com.cribl.ydorego.logcollection.services.filter;
 /**
  * Given a string, this filter will evaluate that the event contains that substring
  * 
- * contains-string://token1
+ * contains:token1
  */
 public class ContainsStringFilter extends DefaultFilterImpl {
 
