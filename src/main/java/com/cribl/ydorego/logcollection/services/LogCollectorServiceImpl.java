@@ -237,7 +237,7 @@ public class LogCollectorServiceImpl implements ILogCollectorService {
      * @throws LogCollectorDefaultException
      * 
      */
-    private IEventFilter getEventFilter(String filter) throws LogCollectorDefaultException {
+    protected IEventFilter getEventFilter(String filter) throws LogCollectorDefaultException {
 
         try {
             String scheme = filter.substring(0, filter.indexOf(":"));
@@ -261,15 +261,13 @@ public class LogCollectorServiceImpl implements ILogCollectorService {
                     break;
 
                 default: {
-                    throw new LogCollectorDefaultException("filter", "Unsupported filter scheme or format");
+                    throw new LogCollectorDefaultException(filter, "Unsupported filter scheme or format for filter:" + filter);
                 }
             }
             return eventFilter;
         } catch (StringIndexOutOfBoundsException boundEx) {
-            throw new LogCollectorDefaultException("filter", "Unsupported filter scheme or format");
+            throw new LogCollectorDefaultException(filter,  "Unsupported filter scheme or format for filter:" + filter);
         }
         
     }
-
-
 }
