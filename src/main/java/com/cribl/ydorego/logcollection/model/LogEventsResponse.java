@@ -11,7 +11,7 @@ public class LogEventsResponse {
 
     private String fileName;
     private Integer numberOfEvents;
-    private String matchingFilter;
+    private String filter;
     private Date timeRequested;
     private Date timeCompleted;
     private List<String> events;
@@ -19,10 +19,10 @@ public class LogEventsResponse {
     public LogEventsResponse() {
     }
 
-    public LogEventsResponse(String fileName, Integer numberOfEvents, String matchingFilter, Date timeRequested, Date timeCompleted, List<String> events) {
+    public LogEventsResponse(String fileName, Integer numberOfEvents, String filter, Date timeRequested, Date timeCompleted, List<String> events) {
         this.fileName = fileName;
         this.numberOfEvents = numberOfEvents;
-        this.matchingFilter = matchingFilter;
+        this.filter = filter;
         this.timeRequested = timeRequested;
         this.timeCompleted = timeCompleted;
         this.events = events;
@@ -44,12 +44,12 @@ public class LogEventsResponse {
         this.numberOfEvents = numberOfEvents;
     }
 
-    public String getMatchingFilter() {
-        return matchingFilter;
+    public String getFilter() {
+        return filter;
     }
 
-    public void setMatchingFilter(String matchingFilter) {
-        this.matchingFilter = matchingFilter;
+    public void setFilter(String filter) {
+        this.filter = filter;
     }
 
     public Date getTimeRequested() {
@@ -78,7 +78,7 @@ public class LogEventsResponse {
 
     @Override
     public String toString() {
-        return "LogEventsResponse [events=" + events + ", fileName=" + fileName + ", matchingFilter=" + matchingFilter
+        return "LogEventsResponse [events=" + events + ", fileName=" + fileName + ", filter=" + filter
                 + ", numberOfEvents=" + numberOfEvents + ", timeCompleted=" + timeCompleted + ", timeRequested="
                 + timeRequested + "]";
     }

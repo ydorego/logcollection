@@ -17,9 +17,10 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.cribl.ydorego.logcollection.exceptions.LogCollectorDefaultException;
@@ -28,18 +29,21 @@ import com.cribl.ydorego.logcollection.model.LogEventsResponse;
 import com.cribl.ydorego.logcollection.model.LogEventsServerResponse;
 import com.cribl.ydorego.logcollection.model.LogFileDescriptor;
 import com.cribl.ydorego.logcollection.model.LogFilesResponse;
+import com.cribl.ydorego.logcollection.services.filter.ContainsAllFilter;
+import com.cribl.ydorego.logcollection.services.filter.ContainsStringFilter;
+import com.cribl.ydorego.logcollection.services.filter.IEventFilter;
+import com.cribl.ydorego.logcollection.services.filter.RegexFilter;
 
 @Service
 public class LogCollectorServiceImpl implements ILogCollectorService {
 
     Logger log = LoggerFactory.getLogger(LogCollectorServiceImpl.class);
 
+    @Value("${server.port}")
+    private String serverPort;
+    
     @Autowired
     private RestTemplate restTemplate;
-
-    // public LogCollectorServiceImpl(@Autowired RestTemplateBuilder builder) {
-    //    this.restTemplate = builder.build();
-    // }
  
     @Override
     public LogFilesResponse getFilesFromDirectory(String directoryPath, String matchingExtensions) throws LogCollectorDefaultException {
@@ -101,6 +105,14 @@ public class LogCollectorServiceImpl implements ILogCollectorService {
         StringBuilder currentLine = new StringBuilder();
         List<String> linesToReturn = new ArrayList<>();
 
+        //
+        // Validate Filter if provided...
+        //
+        IEventFilter eventFilter = null;
+        if (logCollectionRequest.getFilter() != null && !logCollectionRequest.getFilter().isEmpty()) {
+            eventFilter = getEventFilter(logCollectionRequest.getFilter());
+        }
+       
         RandomAccessFile logFileToProcess = null;
         try {
 
@@ -134,9 +146,10 @@ public class LogCollectorServiceImpl implements ILogCollectorService {
                          We are backtracking, need to reverse the line that we've just read and add it
                          to the total that we have to return
                         */
-                        // TODO: Remember the filtering case...
-                        //
-                        linesToReturn.add(currentLine.reverse().toString());
+                        String currentEvent = currentLine.reverse().toString();
+                        if (eventFilter == null || eventFilter.accept(currentEvent)) {
+                            linesToReturn.add(currentEvent);
+                        }
 
                         // Skip the previous line carriage return
                         currentOffset--;
@@ -149,9 +162,10 @@ public class LogCollectorServiceImpl implements ILogCollectorService {
 
                 // Let's add the last line that was read.
                 if (currentOffset < 0) {
-                    // TODO: Remember the filtering case...
-                    //
-                    linesToReturn.add(currentLine.reverse().toString());
+                    String currentEvent = currentLine.reverse().toString();
+                    if (eventFilter == null || eventFilter.accept(currentEvent)) {
+                        linesToReturn.add(currentEvent);
+                    }
                 }
             }
 
@@ -162,7 +176,7 @@ public class LogCollectorServiceImpl implements ILogCollectorService {
             return new LogEventsResponse(
                 logCollectionRequest.getFileName(), 
                 logCollectionRequest.getNumberOfEvents(), 
-                logCollectionRequest.getMatchingFilter(), 
+                logCollectionRequest.getFilter(), 
                 logCollectionRequest.getTimeRequested(), 
                 new Date(),
                 linesToReturn);
@@ -188,27 +202,74 @@ public class LogCollectorServiceImpl implements ILogCollectorService {
      * 
      * It could be improved with a thread pool forking the request in parallel and collecting results asynchronously.
      * 
-     * TODO: Error Handling.
-     * 
-     */
+    */
     @Override
     public List<LogEventsServerResponse> getEventsFromFileFromServers(LogCollectionRequest logCollectionRequest) throws LogCollectorDefaultException {
  
         String[] serverList = logCollectionRequest.getServerList().split(",");
 
-        StringBuilder query = new StringBuilder(":8090/logCollector/get-events?");
+        StringBuilder query = new StringBuilder(":" + serverPort + "/logCollector/get-events?");
         query.append("fileName=" + logCollectionRequest.getFileName());
         query.append("&numberOfEvents=" + logCollectionRequest.getNumberOfEvents());
-        if (logCollectionRequest.getMatchingFilter() != null) {
-            query.append("&matchingFilter=" + logCollectionRequest.getMatchingFilter());
+        if (logCollectionRequest.getFilter() != null) {
+            query.append("&filter=" + logCollectionRequest.getFilter());
         }
       
         List<LogEventsServerResponse> serversResponses = new ArrayList<>();
         Arrays.asList(serverList).stream().forEach(server -> {
-            LogEventsResponse responseFromServer = restTemplate.getForObject("http://" + server + query, LogEventsResponse.class);
-            serversResponses.add(new LogEventsServerResponse(server, responseFromServer));
+            try {
+                ResponseEntity<LogEventsResponse> responseFromServer = restTemplate.getForEntity("http://" + server + query, LogEventsResponse.class);
+                serversResponses.add(new LogEventsServerResponse(server, responseFromServer.getBody(), responseFromServer.getStatusCodeValue(), ""));
+            } catch (RestClientException restException) {
+                serversResponses.add(new LogEventsServerResponse(server, null, 400, restException.getMessage()));
+            }
         });
 
         return serversResponses;
     }
+
+    /**
+     * 
+     * Could have use fancy SpringBoot injection, but went with plain switch statement.
+     * 
+     * @return Filter corresponding to the user selected scheme.
+     * 
+     * @throws LogCollectorDefaultException
+     * 
+     */
+    private IEventFilter getEventFilter(String filter) throws LogCollectorDefaultException {
+
+        try {
+            String scheme = filter.substring(0, filter.indexOf(":"));
+
+            IEventFilter eventFilter = null;
+            switch (scheme) {
+
+                case "contains-all": {
+                    eventFilter = new ContainsAllFilter(filter);
+                }
+                    break;
+
+                case "contains": {
+                    eventFilter = new ContainsStringFilter(filter);
+                }
+                    break;
+
+                case "regex": {
+                    eventFilter = new RegexFilter(filter);
+                }
+                    break;
+
+                default: {
+                    throw new LogCollectorDefaultException("filter", "Unsupported filter scheme or format");
+                }
+            }
+            return eventFilter;
+        } catch (StringIndexOutOfBoundsException boundEx) {
+            throw new LogCollectorDefaultException("filter", "Unsupported filter scheme or format");
+        }
+        
+    }
+
+
 }

@@ -1,0 +1,160 @@
+{
+	"info": {
+		"_postman_id": "582be0c1-dc66-47b4-ac35-10b2955f18cd",
+		"name": "log-collector",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Check Log Collector Health Status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8090/logCollector/health",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"logCollector",
+						"health"
+					]
+				},
+				"description": "Check log collector server health"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Log Events from specified file",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "default"
+					},
+					{
+						"key": "accep",
+						"value": "application/json",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8090/logCollector/get-events?fileName=/var/log/fsck_hfs.log&numberOfEvents=20&filter=regex:[check]",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"logCollector",
+						"get-events"
+					],
+					"query": [
+						{
+							"key": "fileName",
+							"value": "/var/log/fsck_hfs.log"
+						},
+						{
+							"key": "numberOfEvents",
+							"value": "20"
+						},
+						{
+							"key": "filter",
+							"value": "regex:[check]"
+						}
+					]
+				},
+				"description": "Get a list of events from the specified file. The list returned is in reverse time order.\n\nSupported parameters:\n - fileName: The targeted events file\n - numberOfEvents: The number of events to returned [1, 250]\n - matchingFilter: Only returns events matching the filter"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Log Events from specified file from Main Server",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "default"
+					},
+					{
+						"key": "accep",
+						"value": "application/json",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8090/logCollector/get-events-from-servers?fileName=/var/log/dpkg.log&numberOfEvents=20&serverList=log-collector-worker1,log-collector-worker2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"logCollector",
+						"get-events-from-servers"
+					],
+					"query": [
+						{
+							"key": "fileName",
+							"value": "/var/log/dpkg.log"
+						},
+						{
+							"key": "numberOfEvents",
+							"value": "20"
+						},
+						{
+							"key": "filter",
+							"value": "contains-all:test",
+							"disabled": true
+						},
+						{
+							"key": "serverList",
+							"value": "log-collector-worker1,log-collector-worker2"
+						}
+					]
+				},
+				"description": "Get a list of events from the specified file. The list returned is in reverse time order.\n\nSupported parameters:\n - fileName: The targeted events file\n - numberOfEvents: The number of events to returned [1, 250]\n - matchingFilter: Only returns events matching the filter"
+			},
+			"response": []
+		},
+		{
+			"name": "Get list for files from specified directory",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8090/logCollector/get-files?directoryPath=/var/log&matchingExtensions=log",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"logCollector",
+						"get-files"
+					],
+					"query": [
+						{
+							"key": "directoryPath",
+							"value": "/var/log"
+						},
+						{
+							"key": "matchingExtensions",
+							"value": "log"
+						}
+					]
+				},
+				"description": "Get the list of files present in a specified directory.\n\nParameters:\n - directoryPath: The directory to look into.\n - logAndTxtOnly: Only returns files with extension .log or .txt"
+			},
+			"response": []
+		}
+	]
+}
