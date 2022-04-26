@@ -202,9 +202,7 @@ public class LogCollectorServiceImpl implements ILogCollectorService {
      * 
      * It could be improved with a thread pool forking the request in parallel and collecting results asynchronously.
      * 
-     * TODO: Error Handling.
-     * 
-     */
+    */
     @Override
     public List<LogEventsServerResponse> getEventsFromFileFromServers(LogCollectionRequest logCollectionRequest) throws LogCollectorDefaultException {
  
