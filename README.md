@@ -17,6 +17,15 @@ Log Collection Take Home Project
 Git clone repository https://github.com/ydorego/logcollection.git
 
 </br>
+
+### Build the project
+
+```
+cd logcollection
+mvn install
+```
+
+</br>
 </br>
 
 ## Step 2: Build log-collector-server docker image 
