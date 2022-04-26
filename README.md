@@ -54,6 +54,10 @@ curl http://localhost:8090/logCollector/health
 ```
 
 </br>
+
+**The `logcollection/docs` directory contains a postman collection with all the supported API calls**
+
+</br>
 </br>
 
 ## Using the log-collector-server API
